@@ -5,12 +5,19 @@
     "code",
     "discord",
     "math",
+    "offramp",
     "protocol",
+    "persona",
+    "request-finance",
     "safe",
     "sendgrid",
     "slack",
+    "sablier",
+    "superchain",
+    "superfluid",
     "telegram",
     "web3",
-    "webhook"
+    "webhook",
+    "xmtp"
   ]
 }

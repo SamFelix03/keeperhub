@@ -9,7 +9,7 @@
  * 2. Add a system integration to SYSTEM_INTEGRATION_TYPES in discover-plugins.ts
  * 3. Run: pnpm discover-plugins
  *
- * Generated types: aave-v3, aave-v4, aerodrome, ai-gateway, ajna, chainlink, chronicle, clerk, code, compound, cowswap, curve, database, discord, ethena, lido, linear, math, morpho, pendle, protocol, resend, rocket-pool, safe, sendgrid, sky, slack, spark, telegram, uniswap, v0, web3, webflow, webhook, wrapped, yearn
+ * Generated types: aave-v3, aave-v4, aerodrome, ai-gateway, ajna, chainlink, chronicle, clerk, code, compound, cowswap, curve, database, discord, ethena, lido, linear, math, morpho, offramp, pendle, persona, protocol, request-finance, resend, rocket-pool, sablier, safe, sendgrid, sky, slack, spark, superchain, superfluid, telegram, uniswap, v0, web3, webflow, webhook, wrapped, xmtp, yearn
  */
 
 // Integration type union - plugins + system integrations
@@ -33,15 +33,21 @@ export type IntegrationType =
   | "linear"
   | "math"
   | "morpho"
+  | "offramp"
   | "pendle"
+  | "persona"
   | "protocol"
+  | "request-finance"
   | "resend"
   | "rocket-pool"
+  | "sablier"
   | "safe"
   | "sendgrid"
   | "sky"
   | "slack"
   | "spark"
+  | "superchain"
+  | "superfluid"
   | "telegram"
   | "uniswap"
   | "v0"
@@ -49,6 +55,7 @@ export type IntegrationType =
   | "webflow"
   | "webhook"
   | "wrapped"
+  | "xmtp"
   | "yearn";
 
 // Generic config type - plugins define their own keys via formFields[].configKey
