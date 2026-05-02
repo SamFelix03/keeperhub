@@ -11,7 +11,7 @@ import { toChecksumAddress } from "@/lib/address-utils";
 import { getOrganizationWallet } from "@/lib/para/wallet-helpers";
 import { getTurnkeySignerConfig } from "@/lib/turnkey/turnkey-client";
 
-const DEFAULT_XMTP_ENV: XmtpEnv = "testnet";
+const DEFAULT_XMTP_ENV: XmtpEnv = "dev";
 
 export type XmtpSendResult = {
   senderAddress: string;
@@ -42,14 +42,16 @@ function hexToBytes(hex: string): Uint8Array {
 
 export function resolveXmtpEnv(env?: string): XmtpEnv {
   switch (env) {
-    case "dev":
+    case "local":
+      return "local";
     case "production":
     case "mainnet":
-    case "local":
+      return "production";
+    case "dev":
+    case "testnet":
     case "testnet-dev":
     case "testnet-staging":
-    case "testnet":
-      return env;
+      return "dev";
     default:
       return DEFAULT_XMTP_ENV;
   }

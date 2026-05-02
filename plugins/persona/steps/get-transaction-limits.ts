@@ -21,6 +21,7 @@ type GetTransactionLimitsResult =
   | { success: false; error: string };
 
 export type GetTransactionLimitsInput = StepInput & {
+  inquiryId?: string;
   walletAddress?: string;
   email?: string;
   referenceId?: string;

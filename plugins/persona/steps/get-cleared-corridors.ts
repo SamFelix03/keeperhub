@@ -19,6 +19,7 @@ type GetClearedCorridorsResult =
   | { success: false; error: string };
 
 export type GetClearedCorridorsInput = StepInput & {
+  inquiryId?: string;
   walletAddress?: string;
   email?: string;
   referenceId?: string;

@@ -52,6 +52,13 @@ const personaPlugin: IntegrationPlugin = {
       stepImportPath: "check-verification-status",
       configFields: [
         {
+          key: "inquiryId",
+          label: "Inquiry ID (Optional)",
+          type: "template-input",
+          placeholder: "inq_...",
+          required: false,
+        },
+        {
           key: "walletAddress",
           label: "Wallet Address (Optional)",
           type: "template-input",
@@ -102,6 +109,13 @@ const personaPlugin: IntegrationPlugin = {
       stepFunction: "createInquiryStep",
       stepImportPath: "create-inquiry",
       configFields: [
+        {
+          key: "inquiryId",
+          label: "Inquiry ID (Optional)",
+          type: "template-input",
+          placeholder: "inq_...",
+          required: false,
+        },
         {
           key: "walletAddress",
           label: "Wallet Address (Optional)",
@@ -156,6 +170,13 @@ const personaPlugin: IntegrationPlugin = {
       stepFunction: "getClearedCorridorsStep",
       stepImportPath: "get-cleared-corridors",
       configFields: [
+        {
+          key: "inquiryId",
+          label: "Inquiry ID (Optional)",
+          type: "template-input",
+          placeholder: "inq_...",
+          required: false,
+        },
         {
           key: "walletAddress",
           label: "Wallet Address (Optional)",

@@ -23,6 +23,7 @@ export type PersonaVerificationSnapshot = {
 };
 
 type PersonaCheckInput = {
+  inquiryId?: string;
   walletAddress?: string;
   email?: string;
   referenceId?: string;
@@ -210,6 +211,15 @@ export async function getPersonaVerificationSnapshot(
   input: PersonaCheckInput,
   credentials: PersonaCredentials
 ): Promise<PersonaVerificationSnapshot> {
+  if (input.inquiryId) {
+    const payload = await personaRequest(
+      `/inquiries/${encodeURIComponent(input.inquiryId)}`,
+      { method: "GET" },
+      credentials
+    );
+    return extractVerificationSnapshot(payload);
+  }
+
   const referenceId = pickReferenceId(input);
   if (!referenceId && !input.statusEndpoint) {
     return {
@@ -286,10 +296,17 @@ export async function createPersonaInquiry(
   const root = asObject(payload) || {};
   const data = asObject(root.data) || {};
   const attrs = asObject(data.attributes) || {};
+  const meta = asObject(root.meta) || {};
 
   return {
     inquiryId: asString(data.id),
-    inquiryUrl: asString(attrs["inquiry-url"]) || asString(attrs.inquiryUrl),
+    inquiryUrl:
+      asString(attrs["inquiry-url"]) ||
+      asString(attrs.inquiryUrl) ||
+      asString(meta["one-time-link"]) ||
+      asString(meta.oneTimeLink) ||
+      asString(meta["one-time-link-short"]) ||
+      asString(meta.oneTimeLinkShort),
     referenceId,
     raw: payload,
   };

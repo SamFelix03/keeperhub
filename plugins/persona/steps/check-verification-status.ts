@@ -22,6 +22,7 @@ type CheckVerificationStatusResult =
   | { success: false; error: string };
 
 export type CheckVerificationStatusInput = StepInput & {
+  inquiryId?: string;
   walletAddress?: string;
   email?: string;
   referenceId?: string;
