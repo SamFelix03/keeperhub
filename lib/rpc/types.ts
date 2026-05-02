@@ -45,10 +45,12 @@ export type ResolvedRpcConfig = {
 export const SUPPORTED_CHAIN_IDS = {
   // EVM Mainnets
   MAINNET: 1,
+  OPTIMISM: 10,
   BASE: 8453,
   TEMPO_MAINNET: 4217,
   // EVM Testnets
   SEPOLIA: 11_155_111,
+  OPTIMISM_SEPOLIA: 11_155_420,
   BASE_SEPOLIA: 84_532,
   TEMPO_TESTNET: 42_431,
   // Solana

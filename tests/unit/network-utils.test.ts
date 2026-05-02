@@ -24,6 +24,14 @@ describe("getChainIdFromNetwork", () => {
       expect(getChainIdFromNetwork("base-sepolia")).toBe(84_532);
     });
 
+    it("should return chain ID for optimism networks", () => {
+      expect(getChainIdFromNetwork("optimism")).toBe(10);
+      expect(getChainIdFromNetwork("op-mainnet")).toBe(10);
+      expect(getChainIdFromNetwork("optimism-mainnet")).toBe(10);
+      expect(getChainIdFromNetwork("op-sepolia")).toBe(11_155_420);
+      expect(getChainIdFromNetwork("optimism-sepolia")).toBe(11_155_420);
+    });
+
     it("should return chain ID for tempo networks", () => {
       expect(getChainIdFromNetwork("tempo-testnet")).toBe(42_431);
       expect(getChainIdFromNetwork("tempo")).toBe(4217);
@@ -41,6 +49,8 @@ describe("getChainIdFromNetwork", () => {
       expect(getChainIdFromNetwork("Sepolia")).toBe(11_155_111);
       expect(getChainIdFromNetwork("BASE")).toBe(8453);
       expect(getChainIdFromNetwork("BASE-SEPOLIA")).toBe(84_532);
+      expect(getChainIdFromNetwork("OP-MAINNET")).toBe(10);
+      expect(getChainIdFromNetwork("OP-SEPOLIA")).toBe(11_155_420);
     });
 
     it("should throw for unsupported network", () => {
@@ -89,6 +99,8 @@ describe("getNetworkName", () => {
   it("should return name for known chain IDs", () => {
     expect(getNetworkName(1)).toBe("Ethereum Mainnet");
     expect(getNetworkName(11_155_111)).toBe("Ethereum Sepolia");
+    expect(getNetworkName(10)).toBe("OP Mainnet");
+    expect(getNetworkName(11_155_420)).toBe("OP Sepolia");
     expect(getNetworkName(8453)).toBe("Base");
     expect(getNetworkName(84_532)).toBe("Base Sepolia");
     expect(getNetworkName(42_431)).toBe("Tempo Testnet");
@@ -108,6 +120,8 @@ describe("SUPPORTED_CHAIN_IDS", () => {
   it("should have correct values for EVM chains", () => {
     expect(SUPPORTED_CHAIN_IDS.MAINNET).toBe(1);
     expect(SUPPORTED_CHAIN_IDS.SEPOLIA).toBe(11_155_111);
+    expect(SUPPORTED_CHAIN_IDS.OPTIMISM).toBe(10);
+    expect(SUPPORTED_CHAIN_IDS.OPTIMISM_SEPOLIA).toBe(11_155_420);
     expect(SUPPORTED_CHAIN_IDS.BASE).toBe(8453);
     expect(SUPPORTED_CHAIN_IDS.BASE_SEPOLIA).toBe(84_532);
     expect(SUPPORTED_CHAIN_IDS.TEMPO_TESTNET).toBe(42_431);
@@ -120,7 +134,7 @@ describe("SUPPORTED_CHAIN_IDS", () => {
   });
 
   it("should have all expected chains", () => {
-    // 8 total chains: MAINNET, SEPOLIA, BASE, BASE_SEPOLIA, TEMPO_TESTNET, TEMPO_MAINNET, SOLANA_MAINNET, SOLANA_DEVNET
-    expect(Object.keys(SUPPORTED_CHAIN_IDS)).toHaveLength(8);
+    // 10 total chains with OP Mainnet and OP Sepolia included
+    expect(Object.keys(SUPPORTED_CHAIN_IDS)).toHaveLength(10);
   });
 });

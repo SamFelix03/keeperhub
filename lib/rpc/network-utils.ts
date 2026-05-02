@@ -38,9 +38,18 @@ export function getChainIdFromNetwork(network: string | number): number {
     // Base Mainnet
     base: SUPPORTED_CHAIN_IDS.BASE,
     "base-mainnet": SUPPORTED_CHAIN_IDS.BASE,
+    // Optimism Mainnet
+    optimism: SUPPORTED_CHAIN_IDS.OPTIMISM,
+    "op-mainnet": SUPPORTED_CHAIN_IDS.OPTIMISM,
+    "optimism-mainnet": SUPPORTED_CHAIN_IDS.OPTIMISM,
+    op: SUPPORTED_CHAIN_IDS.OPTIMISM,
     // Base Sepolia
     "base-sepolia": SUPPORTED_CHAIN_IDS.BASE_SEPOLIA,
     "base-testnet": SUPPORTED_CHAIN_IDS.BASE_SEPOLIA,
+    // Optimism Sepolia
+    "op-sepolia": SUPPORTED_CHAIN_IDS.OPTIMISM_SEPOLIA,
+    "optimism-sepolia": SUPPORTED_CHAIN_IDS.OPTIMISM_SEPOLIA,
+    "op-testnet": SUPPORTED_CHAIN_IDS.OPTIMISM_SEPOLIA,
     // Tempo
     "tempo-testnet": SUPPORTED_CHAIN_IDS.TEMPO_TESTNET,
     tempo: SUPPORTED_CHAIN_IDS.TEMPO_MAINNET,
@@ -70,6 +79,8 @@ export function getNetworkName(chainId: number): string {
   const chainNames: Record<number, string> = {
     [SUPPORTED_CHAIN_IDS.MAINNET]: "Ethereum Mainnet",
     [SUPPORTED_CHAIN_IDS.SEPOLIA]: "Ethereum Sepolia",
+    [SUPPORTED_CHAIN_IDS.OPTIMISM]: "OP Mainnet",
+    [SUPPORTED_CHAIN_IDS.OPTIMISM_SEPOLIA]: "OP Sepolia",
     [SUPPORTED_CHAIN_IDS.BASE]: "Base",
     [SUPPORTED_CHAIN_IDS.BASE_SEPOLIA]: "Base Sepolia",
     [SUPPORTED_CHAIN_IDS.TEMPO_TESTNET]: "Tempo Testnet",
