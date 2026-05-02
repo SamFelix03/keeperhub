@@ -249,6 +249,8 @@ describe("RPC Config Resolution", () => {
     const chainKeys = [
       { json: "eth-mainnet", public: PUBLIC_RPCS.ETH_MAINNET },
       { json: "eth-sepolia", public: PUBLIC_RPCS.SEPOLIA },
+      { json: "op-mainnet", public: PUBLIC_RPCS.OP_MAINNET },
+      { json: "op-sepolia", public: PUBLIC_RPCS.OP_SEPOLIA },
       { json: "base-mainnet", public: PUBLIC_RPCS.BASE_MAINNET },
       { json: "base-testnet", public: PUBLIC_RPCS.BASE_SEPOLIA },
       { json: "tempo-testnet", public: PUBLIC_RPCS.TEMPO_TESTNET },
@@ -356,6 +358,14 @@ describe("RPC Config Resolution", () => {
         "eth-sepolia": {
           primaryRpcUrl: "https://sepolia.primary.com",
           fallbackRpcUrl: "https://sepolia.fallback.com",
+        },
+        "op-mainnet": {
+          primaryRpcUrl: "https://op.primary.com",
+          fallbackRpcUrl: "https://op.fallback.com",
+        },
+        "op-sepolia": {
+          primaryRpcUrl: "https://op-sepolia.primary.com",
+          fallbackRpcUrl: "https://op-sepolia.fallback.com",
         },
         "base-mainnet": {
           primaryRpcUrl: "https://base.primary.com",

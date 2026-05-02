@@ -29,6 +29,8 @@ export const PUBLIC_RPCS = {
   ETH_MAINNET: "https://chain.techops.services/eth-mainnet",
   ETH_MAINNET_FALLBACK: "https://1rpc.io/eth",
   SEPOLIA: "https://ethereum-sepolia-rpc.publicnode.com",
+  OP_MAINNET: "https://mainnet.optimism.io",
+  OP_SEPOLIA: "https://sepolia.optimism.io",
   BASE_MAINNET: "https://mainnet.base.org",
   BASE_SEPOLIA: "https://sepolia.base.org",
   TEMPO_TESTNET: "https://rpc.testnet.tempo.xyz",
@@ -95,12 +97,26 @@ export const CHAIN_CONFIG: Record<number, ChainConfigEntry> = {
     fallbackEnvKey: "CHAIN_BASE_MAINNET_FALLBACK_RPC",
     publicDefault: PUBLIC_RPCS.BASE_MAINNET,
   },
+  // OP Mainnet
+  10: {
+    jsonKey: "op-mainnet",
+    envKey: "CHAIN_OP_MAINNET_PRIMARY_RPC",
+    fallbackEnvKey: "CHAIN_OP_MAINNET_FALLBACK_RPC",
+    publicDefault: PUBLIC_RPCS.OP_MAINNET,
+  },
   // Base Sepolia
   84532: {
     jsonKey: "base-testnet",
     envKey: "CHAIN_BASE_SEPOLIA_PRIMARY_RPC",
     fallbackEnvKey: "CHAIN_BASE_SEPOLIA_FALLBACK_RPC",
     publicDefault: PUBLIC_RPCS.BASE_SEPOLIA,
+  },
+  // OP Sepolia
+  11155420: {
+    jsonKey: "op-sepolia",
+    envKey: "CHAIN_OP_SEPOLIA_PRIMARY_RPC",
+    fallbackEnvKey: "CHAIN_OP_SEPOLIA_FALLBACK_RPC",
+    publicDefault: PUBLIC_RPCS.OP_SEPOLIA,
   },
   // Tempo Testnet
   42431: {
