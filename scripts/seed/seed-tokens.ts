@@ -112,11 +112,40 @@ const TOKEN_CONFIGS: TokenConfig[] = [
   },
 
   // ==========================================================================
+  // OP Mainnet (chainId: 10)
+  // ==========================================================================
+  {
+    chainId: 10,
+    tokenAddress: "0x0b2c639c533813f4aa9d7837caf62653d097ff85", // USDC (native)
+    logoUrl: LOGOS.USDC,
+    isStablecoin: true,
+    sortOrder: 1,
+  },
+  {
+    chainId: 10,
+    tokenAddress: "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58", // USDT
+    logoUrl: LOGOS.USDT,
+    isStablecoin: true,
+    sortOrder: 2,
+  },
+
+  // ==========================================================================
   // Base Sepolia (chainId: 84532)
   // ==========================================================================
   {
     chainId: 84_532,
     tokenAddress: "0x036cbd53842c5426634e7929541ec2318f3dcf7e", // USDC (Circle's official Base Sepolia)
+    logoUrl: LOGOS.USDC,
+    isStablecoin: true,
+    sortOrder: 1,
+  },
+
+  // ==========================================================================
+  // OP Sepolia (chainId: 11155420)
+  // ==========================================================================
+  {
+    chainId: 11_155_420,
+    tokenAddress: "0x5fd84259d66cd46123540766be93dfe6d43130d7", // USDC (Circle testnet)
     logoUrl: LOGOS.USDC,
     isStablecoin: true,
     sortOrder: 1,
