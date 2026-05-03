@@ -11,19 +11,29 @@ export function getAcrossBaseUrl(
   mode: string | undefined,
   credentials: SuperchainCredentials
 ): string {
-  if (credentials.ACROSS_API_BASE_URL) {
-    return credentials.ACROSS_API_BASE_URL;
-  }
-
   if (mode === "testnet") {
     return ACROSS_TESTNET_API;
+  }
+
+  if (mode === "mainnet") {
+    return ACROSS_MAINNET_API;
+  }
+
+  // Only honor explicit base URL override when mode is not set.
+  if (credentials.ACROSS_API_BASE_URL) {
+    return credentials.ACROSS_API_BASE_URL;
   }
 
   return ACROSS_MAINNET_API;
 }
 
-function buildHeaders(credentials: SuperchainCredentials): HeadersInit {
-  if (credentials.ACROSS_API_KEY) {
+function buildHeaders(
+  mode: string | undefined,
+  credentials: SuperchainCredentials
+): HeadersInit {
+  // Across testnet endpoints are publicly accessible and may expose a broader
+  // route surface without authenticated production scoping.
+  if (mode !== "testnet" && credentials.ACROSS_API_KEY) {
     return {
       Accept: "application/json",
       Authorization: `Bearer ${credentials.ACROSS_API_KEY}`,
@@ -50,7 +60,11 @@ export async function acrossGet<T>(
     }
   }
 
-  if (credentials.ACROSS_INTEGRATOR_ID && !searchParams.has("integratorId")) {
+  if (
+    mode !== "testnet" &&
+    credentials.ACROSS_INTEGRATOR_ID &&
+    !searchParams.has("integratorId")
+  ) {
     searchParams.set("integratorId", credentials.ACROSS_INTEGRATOR_ID);
   }
 
@@ -62,14 +76,16 @@ export async function acrossGet<T>(
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: buildHeaders(credentials),
+      headers: buildHeaders(mode, credentials),
       signal: controller.signal,
     });
 
     const text = await response.text();
 
     if (!response.ok) {
-      throw new Error(`Across API request failed with HTTP ${response.status}: ${text}`);
+      throw new Error(
+        `Across API request failed with HTTP ${response.status} (${url}): ${text}`
+      );
     }
 
     if (!text) {

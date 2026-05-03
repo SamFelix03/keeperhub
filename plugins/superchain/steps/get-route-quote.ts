@@ -6,6 +6,7 @@ import { type StepInput, withStepLogging } from "@/lib/workflow/executor/step-ha
 import { getErrorMessage } from "@/lib/utils";
 import type { SuperchainCredentials } from "../credentials";
 import { acrossGet } from "./superchain-core";
+import { validateAcrossRouteInputs } from "./route-preflight";
 
 type AcrossSwapQuote = {
   approvalTxns?: unknown[];
@@ -48,6 +49,17 @@ async function stepHandler(
   credentials: SuperchainCredentials
 ): Promise<GetRouteQuoteResult> {
   try {
+    await validateAcrossRouteInputs(
+      {
+        networkMode: input.networkMode,
+        originChainId: input.originChainId,
+        destinationChainId: input.destinationChainId,
+        inputToken: input.inputToken,
+        outputToken: input.outputToken,
+      },
+      credentials
+    );
+
     const quote = await acrossGet<AcrossSwapQuote>(
       input.networkMode,
       "/swap/approval",
@@ -88,9 +100,12 @@ export async function getRouteQuoteStep(
 ): Promise<GetRouteQuoteResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as SuperchainCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("superchain/get-route-quote requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as SuperchainCredentials;
 
   return withPluginMetrics(
     {

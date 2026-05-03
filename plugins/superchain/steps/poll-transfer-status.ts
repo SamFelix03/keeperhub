@@ -70,9 +70,23 @@ async function stepHandler(
       depositId: details.depositId,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
+    if (
+      message.includes("DepositNotFoundException") ||
+      message.includes("Deposit not found")
+    ) {
+      return {
+        success: true,
+        status: "pending_indexing",
+        details: {
+          message:
+            "Deposit submitted but not yet indexed by Across status endpoint. Retry polling shortly.",
+        },
+      };
+    }
     return {
       success: false,
-      error: `Failed to poll transfer status: ${getErrorMessage(error)}`,
+      error: `Failed to poll transfer status: ${message}`,
     };
   }
 }
@@ -82,9 +96,12 @@ export async function pollTransferStatusStep(
 ): Promise<PollTransferStatusResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as SuperchainCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("superchain/poll-transfer-status requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as SuperchainCredentials;
 
   return withPluginMetrics(
     {

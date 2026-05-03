@@ -11,7 +11,7 @@ const superchainPlugin: IntegrationPlugin = {
   formFields: [
     {
       id: "apiKey",
-      label: "Across API Key (Optional)",
+      label: "Across API Key",
       type: "password",
       placeholder: "Across API key",
       configKey: "ACROSS_API_KEY",
@@ -24,7 +24,7 @@ const superchainPlugin: IntegrationPlugin = {
     },
     {
       id: "integratorId",
-      label: "Integrator ID (Optional)",
+      label: "Integrator ID",
       type: "text",
       placeholder: "0xdead",
       configKey: "ACROSS_INTEGRATOR_ID",
@@ -41,6 +41,12 @@ const superchainPlugin: IntegrationPlugin = {
       helpText: "Leave empty to auto-select mainnet/testnet API endpoint.",
     },
   ],
+  testConfig: {
+    getTestFunction: async () => {
+      const { testSuperchain } = await import("./test");
+      return testSuperchain;
+    },
+  },
   actions: [
     {
       slug: "get-supported-routes",
@@ -279,11 +285,24 @@ const superchainPlugin: IntegrationPlugin = {
           placeholder: "auto or 0.01",
           required: false,
         },
+        {
+          key: "executeOnchain",
+          label: "Broadcast Swap Transaction",
+          type: "select",
+          options: [
+            { value: "false", label: "Prepare Only" },
+            { value: "true", label: "Prepare + Broadcast" },
+          ],
+          defaultValue: "false",
+          required: false,
+        },
       ],
       outputFields: [
         { field: "success", description: "Whether preparation succeeded" },
+        { field: "executed", description: "Whether swap transaction was broadcast" },
         { field: "approvalTxns", description: "Approval transactions to execute first" },
         { field: "swapTx", description: "Main swap transaction payload" },
+        { field: "depositTxnRef", description: "Origin chain deposit transaction hash" },
         { field: "expectedFillTime", description: "Estimated fill time (seconds)" },
         { field: "quoteExpiryTimestamp", description: "Quote expiry unix timestamp" },
         { field: "quoteId", description: "Across quote identifier, if available" },

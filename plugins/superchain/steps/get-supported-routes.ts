@@ -61,9 +61,12 @@ export async function getSupportedRoutesStep(
 ): Promise<GetSupportedRoutesResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as SuperchainCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("superchain/get-supported-routes requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as SuperchainCredentials;
 
   return withPluginMetrics(
     {
