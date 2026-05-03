@@ -60,9 +60,14 @@ export async function subscribeInvoiceEventsStep(
 ): Promise<SubscribeInvoiceEventsResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as RequestFinanceCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error(
+      "request-finance/subscribe-invoice-events requires integrationId"
+    );
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as RequestFinanceCredentials;
 
   return withPluginMetrics(
     {

@@ -100,9 +100,12 @@ export async function getConversionStatusStep(
 ): Promise<GetConversionStatusResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as OfframpCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("offramp/get-conversion-status requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as OfframpCredentials;
 
   return withPluginMetrics(
     {

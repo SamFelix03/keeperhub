@@ -60,9 +60,14 @@ export async function subscribeVerificationWebhookStep(
 ): Promise<SubscribeVerificationWebhookResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as PersonaCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error(
+      "persona/subscribe-verification-webhook requires integrationId"
+    );
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as PersonaCredentials;
 
   return withPluginMetrics(
     {

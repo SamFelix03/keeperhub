@@ -89,9 +89,12 @@ export async function getSupportedCorridorsStep(
 ): Promise<GetSupportedCorridorsResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as OfframpCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("offramp/get-supported-corridors requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as OfframpCredentials;
 
   return withPluginMetrics(
     {

@@ -1,8 +1,10 @@
 import "server-only";
 
+import { fetchCredentials } from "@/lib/credential-fetcher";
 import { withPluginMetrics } from "@/lib/metrics/instrumentation/plugin";
 import { type StepInput, withStepLogging } from "@/lib/workflow/executor/step-handler";
 import { getErrorMessage } from "@/lib/utils";
+import type { XmtpCredentials } from "../credentials";
 import { resolveXmtpEnv, sendXmtpTextMessage } from "./xmtp-core";
 
 type SendTransactionReceiptResult =
@@ -26,6 +28,7 @@ export type SendTransactionReceiptInput = StepInput & {
   paymentIntentId?: string;
   xmtpEnv?: string;
   xmtpDbPath?: string;
+  integrationId?: string;
 };
 
 function buildReceiptMessage(input: SendTransactionReceiptInput): string {
@@ -41,7 +44,8 @@ function buildReceiptMessage(input: SendTransactionReceiptInput): string {
 }
 
 async function stepHandler(
-  input: SendTransactionReceiptInput
+  input: SendTransactionReceiptInput,
+  credentials: XmtpCredentials
 ): Promise<SendTransactionReceiptResult> {
   const organizationId = input._context?.organizationId;
   if (!organizationId) {
@@ -52,13 +56,13 @@ async function stepHandler(
   }
 
   try {
-    const env = resolveXmtpEnv(input.xmtpEnv);
+    const env = resolveXmtpEnv(input.xmtpEnv || credentials.XMTP_ENV);
     const result = await sendXmtpTextMessage({
       organizationId,
       recipientAddress: input.recipientAddress,
       message: buildReceiptMessage(input),
       env,
-      dbPath: input.xmtpDbPath,
+      dbPath: input.xmtpDbPath || credentials.XMTP_DB_PATH,
     });
 
     return {
@@ -82,6 +86,12 @@ export async function sendTransactionReceiptStep(
   input: SendTransactionReceiptInput
 ): Promise<SendTransactionReceiptResult> {
   "use step";
+  if (!input.integrationId) {
+    throw new Error("xmtp/send-transaction-receipt requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as XmtpCredentials;
 
   return withPluginMetrics(
     {
@@ -89,7 +99,7 @@ export async function sendTransactionReceiptStep(
       actionName: "send-transaction-receipt",
       executionId: input._context?.executionId,
     },
-    () => withStepLogging(input, () => stepHandler(input))
+    () => withStepLogging(input, () => stepHandler(input, credentials))
   );
 }
 sendTransactionReceiptStep.maxRetries = 0;

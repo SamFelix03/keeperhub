@@ -1,8 +1,10 @@
 import "server-only";
 
+import { fetchCredentials } from "@/lib/credential-fetcher";
 import { withPluginMetrics } from "@/lib/metrics/instrumentation/plugin";
 import { type StepInput, withStepLogging } from "@/lib/workflow/executor/step-handler";
 import { getErrorMessage } from "@/lib/utils";
+import type { XmtpCredentials } from "../credentials";
 import { resolveXmtpEnv, sendXmtpTextMessage } from "./xmtp-core";
 
 type SendMessageResult =
@@ -21,9 +23,13 @@ export type SendMessageInput = StepInput & {
   message: string;
   xmtpEnv?: string;
   xmtpDbPath?: string;
+  integrationId?: string;
 };
 
-async function stepHandler(input: SendMessageInput): Promise<SendMessageResult> {
+async function stepHandler(
+  input: SendMessageInput,
+  credentials: XmtpCredentials
+): Promise<SendMessageResult> {
   const organizationId = input._context?.organizationId;
   if (!organizationId) {
     return {
@@ -33,13 +39,13 @@ async function stepHandler(input: SendMessageInput): Promise<SendMessageResult> 
   }
 
   try {
-    const env = resolveXmtpEnv(input.xmtpEnv);
+    const env = resolveXmtpEnv(input.xmtpEnv || credentials.XMTP_ENV);
     const result = await sendXmtpTextMessage({
       organizationId,
       recipientAddress: input.recipientAddress,
       message: input.message,
       env,
-      dbPath: input.xmtpDbPath,
+      dbPath: input.xmtpDbPath || credentials.XMTP_DB_PATH,
     });
 
     return {
@@ -62,6 +68,12 @@ export async function sendMessageStep(
   input: SendMessageInput
 ): Promise<SendMessageResult> {
   "use step";
+  if (!input.integrationId) {
+    throw new Error("xmtp/send-message requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as XmtpCredentials;
 
   return withPluginMetrics(
     {
@@ -69,7 +81,7 @@ export async function sendMessageStep(
       actionName: "send-message",
       executionId: input._context?.executionId,
     },
-    () => withStepLogging(input, () => stepHandler(input))
+    () => withStepLogging(input, () => stepHandler(input, credentials))
   );
 }
 sendMessageStep.maxRetries = 0;

@@ -52,9 +52,12 @@ export async function createInquiryStep(
 ): Promise<CreateInquiryResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as PersonaCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("persona/create-inquiry requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as PersonaCredentials;
 
   return withPluginMetrics(
     {

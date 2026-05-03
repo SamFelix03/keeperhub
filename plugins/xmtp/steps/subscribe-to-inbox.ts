@@ -1,8 +1,10 @@
 import "server-only";
 
+import { fetchCredentials } from "@/lib/credential-fetcher";
 import { withPluginMetrics } from "@/lib/metrics/instrumentation/plugin";
 import { type StepInput, withStepLogging } from "@/lib/workflow/executor/step-handler";
 import { getErrorMessage } from "@/lib/utils";
+import type { XmtpCredentials } from "../credentials";
 import { createXmtpClientForOrganization, resolveXmtpEnv } from "./xmtp-core";
 
 type SubscribeToInboxResult =
@@ -26,6 +28,7 @@ export type SubscribeToInboxInput = StepInput & {
   pollIntervalSeconds?: string;
   xmtpEnv?: string;
   xmtpDbPath?: string;
+  integrationId?: string;
 };
 
 function parseWhitelist(raw?: string): string[] {
@@ -36,7 +39,8 @@ function parseWhitelist(raw?: string): string[] {
 }
 
 async function stepHandler(
-  input: SubscribeToInboxInput
+  input: SubscribeToInboxInput,
+  credentials: XmtpCredentials
 ): Promise<SubscribeToInboxResult> {
   try {
     new URL(input.webhookUrl);
@@ -46,7 +50,7 @@ async function stepHandler(
 
   const whitelistSenders = parseWhitelist(input.whitelistSenders);
   const pollInterval = Number.parseInt(input.pollIntervalSeconds ?? "30", 10);
-  const env = resolveXmtpEnv(input.xmtpEnv);
+  const env = resolveXmtpEnv(input.xmtpEnv || credentials.XMTP_ENV);
 
   let senderAddress: string | undefined;
   const organizationId = input._context?.organizationId;
@@ -56,7 +60,7 @@ async function stepHandler(
       const xmtp = await createXmtpClientForOrganization({
         organizationId,
         env,
-        dbPath: input.xmtpDbPath,
+        dbPath: input.xmtpDbPath || credentials.XMTP_DB_PATH,
       });
       senderAddress = xmtp.senderAddress;
     } catch (error) {
@@ -88,6 +92,12 @@ export async function subscribeToInboxStep(
   input: SubscribeToInboxInput
 ): Promise<SubscribeToInboxResult> {
   "use step";
+  if (!input.integrationId) {
+    throw new Error("xmtp/subscribe-to-inbox requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as XmtpCredentials;
 
   return withPluginMetrics(
     {
@@ -95,7 +105,7 @@ export async function subscribeToInboxStep(
       actionName: "subscribe-to-inbox",
       executionId: input._context?.executionId,
     },
-    () => withStepLogging(input, () => stepHandler(input))
+    () => withStepLogging(input, () => stepHandler(input, credentials))
   );
 }
 subscribeToInboxStep.maxRetries = 0;

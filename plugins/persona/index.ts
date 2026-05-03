@@ -41,6 +41,12 @@ const personaPlugin: IntegrationPlugin = {
       helpText: "Used by your webhook endpoint to validate Persona callbacks.",
     },
   ],
+  testConfig: {
+    getTestFunction: async () => {
+      const { testPersona } = await import("./test");
+      return testPersona;
+    },
+  },
   actions: [
     {
       slug: "check-verification-status",

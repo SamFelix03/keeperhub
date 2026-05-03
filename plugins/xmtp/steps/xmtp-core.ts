@@ -1,5 +1,7 @@
 import "server-only";
 
+import { dirname, extname } from "node:path";
+import { mkdirSync } from "node:fs";
 import { TurnkeySigner } from "@turnkey/ethers";
 import {
   Client,
@@ -60,17 +62,28 @@ export function resolveXmtpEnv(env?: string): XmtpEnv {
 export function toXmtpIdentifier(address: string): Identifier {
   return {
     identifier: toChecksumAddress(address).toLowerCase(),
-    identifierKind: "Ethereum" as unknown as Identifier["identifierKind"],
+    // node-bindings uses IdentifierKind.Ethereum = 0
+    identifierKind: 0 as Identifier["identifierKind"],
   };
 }
 
 function getDefaultDbPath(organizationId: string): string {
-  const root =
-    process.env.XMTP_DB_PATH ||
-    process.env.TMPDIR ||
-    process.env.TEMP ||
-    "/tmp/keeperhub-xmtp";
-  return `${root.replace(/\/+$/, "")}/${organizationId}`;
+  const root = "/tmp/keeperhub-xmtp";
+  return `${root.replace(/\/+$/, "")}/${organizationId}/xmtp.db`;
+}
+
+function resolveSqliteDbFilePath(dbPath: string): string {
+  const normalized = dbPath.trim().replace(/\/+$/, "");
+  if (normalized === "") {
+    throw new Error("XMTP dbPath cannot be empty");
+  }
+  return extname(normalized).toLowerCase() === ".db"
+    ? normalized
+    : `${normalized}/xmtp.db`;
+}
+
+function ensureDbParentPath(dbFilePath: string): void {
+  mkdirSync(dirname(dbFilePath), { recursive: true });
 }
 
 export async function createXmtpClientForOrganization(params: {
@@ -113,11 +126,15 @@ export async function createXmtpClientForOrganization(params: {
   };
 
   const env = resolveXmtpEnv(params.env);
+  const dbPath = resolveSqliteDbFilePath(
+    params.dbPath || getDefaultDbPath(params.organizationId)
+  );
+  ensureDbParentPath(dbPath);
   const client = await Client.create(
     signer,
     {
       env,
-      dbPath: params.dbPath || getDefaultDbPath(params.organizationId),
+      dbPath,
     } as Parameters<typeof Client.create>[1]
   );
 

@@ -24,7 +24,7 @@ const requestFinancePlugin: IntegrationPlugin = {
     },
     {
       id: "baseUrl",
-      label: "Base URL (Optional)",
+      label: "Base URL",
       type: "url",
       placeholder: "https://api.request.finance",
       configKey: "REQUEST_FINANCE_BASE_URL",
@@ -42,6 +42,12 @@ const requestFinancePlugin: IntegrationPlugin = {
         "Used by your webhook endpoint to validate X-Webhook-Signature payloads.",
     },
   ],
+  testConfig: {
+    getTestFunction: async () => {
+      const { testRequestFinance } = await import("./test");
+      return testRequestFinance;
+    },
+  },
   actions: [
     {
       slug: "subscribe-invoice-events",

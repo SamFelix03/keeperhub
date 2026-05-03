@@ -11,7 +11,7 @@ const offrampPlugin: IntegrationPlugin = {
   formFields: [
     {
       id: "onramperApiKey",
-      label: "Onramper API Key (Optional)",
+      label: "Onramper API Key",
       type: "password",
       placeholder: "pk_...",
       configKey: "ONRAMPER_API_KEY",
@@ -24,7 +24,7 @@ const offrampPlugin: IntegrationPlugin = {
     },
     {
       id: "transakApiKey",
-      label: "Transak API Key (Optional)",
+      label: "Transak API Key",
       type: "password",
       placeholder: "apiKey",
       configKey: "TRANSAK_API_KEY",
@@ -63,6 +63,12 @@ const offrampPlugin: IntegrationPlugin = {
       helpText: "Used when preparing Transak conversion intent payloads.",
     },
   ],
+  testConfig: {
+    getTestFunction: async () => {
+      const { testOfframp } = await import("./test");
+      return testOfframp;
+    },
+  },
   actions: [
     {
       slug: "get-best-quote",

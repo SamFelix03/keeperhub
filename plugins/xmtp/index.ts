@@ -30,6 +30,12 @@ const xmtpPlugin: IntegrationPlugin = {
         "Optional persistent storage path for XMTP client state when running long-lived listeners.",
     },
   ],
+  testConfig: {
+    getTestFunction: async () => {
+      const { testXmtp } = await import("./test");
+      return testXmtp;
+    },
+  },
   actions: [
     {
       slug: "send-message",

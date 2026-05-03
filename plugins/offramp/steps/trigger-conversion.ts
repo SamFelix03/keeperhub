@@ -110,9 +110,12 @@ export async function triggerConversionStep(
 ): Promise<TriggerConversionResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as OfframpCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("offramp/trigger-conversion requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as OfframpCredentials;
 
   return withPluginMetrics(
     {

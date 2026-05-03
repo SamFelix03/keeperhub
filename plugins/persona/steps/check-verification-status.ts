@@ -57,9 +57,12 @@ export async function checkVerificationStatusStep(
 ): Promise<CheckVerificationStatusResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as PersonaCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("persona/check-verification-status requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as PersonaCredentials;
 
   return withPluginMetrics(
     {

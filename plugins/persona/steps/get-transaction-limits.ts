@@ -54,9 +54,12 @@ export async function getTransactionLimitsStep(
 ): Promise<GetTransactionLimitsResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as PersonaCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("persona/get-transaction-limits requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as PersonaCredentials;
 
   return withPluginMetrics(
     {

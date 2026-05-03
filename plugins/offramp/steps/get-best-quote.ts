@@ -143,9 +143,12 @@ export async function getBestQuoteStep(
 ): Promise<GetBestQuoteResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as OfframpCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("offramp/get-best-quote requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as OfframpCredentials;
 
   return withPluginMetrics(
     {

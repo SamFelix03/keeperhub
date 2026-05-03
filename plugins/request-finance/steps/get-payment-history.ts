@@ -110,9 +110,12 @@ export async function getPaymentHistoryStep(
 ): Promise<GetPaymentHistoryResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as RequestFinanceCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("request-finance/get-payment-history requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as RequestFinanceCredentials;
 
   return withPluginMetrics(
     {

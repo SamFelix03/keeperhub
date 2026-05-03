@@ -53,9 +53,12 @@ export async function getClearedCorridorsStep(
 ): Promise<GetClearedCorridorsResult> {
   "use step";
 
-  const credentials = input.integrationId
-    ? ((await fetchCredentials(input.integrationId)) as PersonaCredentials)
-    : {};
+  if (!input.integrationId) {
+    throw new Error("persona/get-cleared-corridors requires integrationId");
+  }
+  const credentials = (await fetchCredentials(
+    input.integrationId
+  )) as PersonaCredentials;
 
   return withPluginMetrics(
     {
