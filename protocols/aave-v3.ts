@@ -1,4 +1,6 @@
 import { defineProtocol } from "@/lib/protocol-registry";
+import aaveV3PoolAbi from "./abis/aave-v3-pool.json";
+import aaveV3DataProviderAbi from "./abis/aave-v3-data-provider.json";
 
 export default defineProtocol({
   name: "Aave V3",
@@ -16,6 +18,8 @@ export default defineProtocol({
         "1": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
         // Base
         "8453": "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+        // Base Sepolia Testnet
+        "84532": "0x8bAB6d1b75f19e9eD9fCe8b9BD338844fF79aE27",
         // Arbitrum One
         "42161": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
         // Optimism
@@ -23,7 +27,7 @@ export default defineProtocol({
         // Sepolia Testnet
         "11155111": "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
       },
-      // Proxy contract -- ABI auto-resolved via abi-cache
+      abi: JSON.stringify(aaveV3PoolAbi),
     },
     poolDataProvider: {
       label: "Aave V3 Pool Data Provider",
@@ -39,7 +43,7 @@ export default defineProtocol({
         // Sepolia Testnet
         "11155111": "0x3e9708d80f7B3e43118013075F7e95CE3AB31F31",
       },
-      // ABI auto-resolved via abi-cache
+      abi: JSON.stringify(aaveV3DataProviderAbi),
     },
   },
 

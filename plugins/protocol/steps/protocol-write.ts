@@ -1,5 +1,6 @@
 import "server-only";
 import "@/protocols";
+import { ethers } from "ethers";
 
 import {
   type WriteContractCoreInput,
@@ -7,7 +8,10 @@ import {
   writeContractCore,
 } from "@/plugins/web3/steps/write-contract-core";
 import { resolveAbi } from "@/lib/abi/cache";
+import { initializeWalletSigner } from "@/lib/para/wallet-helpers";
+import { getRpcProvider } from "@/lib/rpc/provider-factory";
 import { getProtocol } from "@/lib/protocol-registry";
+import { resolveOrganizationContext } from "@/lib/web3/resolve-org-context";
 import { type StepInput, withStepLogging } from "@/lib/workflow/executor/step-handler";
 import { applyEncodeTransformsNamed } from "@/lib/protocol-encode-transforms";
 import {
@@ -128,6 +132,46 @@ export async function protocolWriteStep(
 
     // 5. Build function arguments from named inputs ordered by action definition
     const functionArgs = buildFunctionArgs(input, meta);
+
+    // Minimal DX guard: when running Aave V3 supply directly, ensure allowance
+    // exists for the Pool spender so supply doesn't fail on missing approve.
+    if (meta.protocolSlug === "aave-v3" && meta.functionName === "supply") {
+      const asset = typeof input.asset === "string" ? input.asset : undefined;
+      const amountRaw =
+        typeof input.amount === "string" && input.amount.trim() !== ""
+          ? BigInt(input.amount)
+          : undefined;
+      if (asset && ethers.isAddress(asset) && amountRaw && amountRaw > BigInt(0)) {
+        const orgCtx = await resolveOrganizationContext(
+          input._context ?? {},
+          "[Protocol Write:Aave Supply]",
+          "protocol-write"
+        );
+        if (!orgCtx.success) {
+          return { success: false, error: orgCtx.error };
+        }
+        const { organizationId, userId } = orgCtx;
+        const chainId = Number.parseInt(input.network, 10);
+        const rpcManager = await getRpcProvider({ chainId, userId });
+        const rpcUrl = await rpcManager.resolveActiveRpcUrl();
+        const signer = await initializeWalletSigner(organizationId, rpcUrl, chainId);
+
+        const erc20 = new ethers.Contract(
+          asset,
+          [
+            "function allowance(address owner, address spender) view returns (uint256)",
+            "function approve(address spender, uint256 amount) returns (bool)",
+          ],
+          signer
+        );
+        const owner = await signer.getAddress();
+        const current = (await erc20.allowance(owner, contractAddress)) as bigint;
+        if (current < amountRaw) {
+          const approveTx = await erc20.approve(contractAddress, amountRaw);
+          await approveTx.wait();
+        }
+      }
+    }
 
     // 6. Delegate to writeContractCore
     const ethValue =
