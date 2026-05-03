@@ -3,6 +3,7 @@
 import { Box, Workflow as WorkflowIcon } from "lucide-react";
 import Image from "next/image";
 import type { KeyboardEvent } from "react";
+import { IntegrationIcon } from "@/components/ui/integration-icon";
 import type { ProtocolDefinition } from "@/lib/protocol-registry";
 
 type ProtocolCardV2Props = {
@@ -60,13 +61,20 @@ export function ProtocolCardV2({
     >
       <div className="pointer-events-none relative z-[2] flex size-12 items-center justify-center rounded-lg bg-[var(--color-hub-icon-bg)]">
         {protocol.icon ? (
-          <Image
-            alt=""
-            className="size-8 object-contain"
-            height={32}
-            src={protocol.icon}
-            width={32}
-          />
+          protocol.icon.startsWith("integration:") ? (
+            <IntegrationIcon
+              className="size-8 object-contain"
+              integration={protocol.icon.replace("integration:", "")}
+            />
+          ) : (
+            <Image
+              alt=""
+              className="size-8 object-contain"
+              height={32}
+              src={protocol.icon}
+              width={32}
+            />
+          )
         ) : (
           <Box
             aria-hidden="true"

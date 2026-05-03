@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { IntegrationIcon } from "@/components/ui/integration-icon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api, type SavedWorkflow } from "@/lib/api-client";
 import { authClient, useSession } from "@/lib/auth-client";
@@ -402,13 +403,20 @@ export function ProtocolDetail({
       <div className="flex items-start gap-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-[var(--color-hub-icon-bg)]">
           {protocol.icon ? (
-            <Image
-              alt={protocol.name}
-              className="rounded"
-              height={32}
-              src={protocol.icon}
-              width={32}
-            />
+            protocol.icon.startsWith("integration:") ? (
+              <IntegrationIcon
+                className="size-8"
+                integration={protocol.icon.replace("integration:", "")}
+              />
+            ) : (
+              <Image
+                alt={protocol.name}
+                className="rounded"
+                height={32}
+                src={protocol.icon}
+                width={32}
+              />
+            )
           ) : (
             <Box className="size-5 text-[var(--color-text-accent)]" />
           )}
